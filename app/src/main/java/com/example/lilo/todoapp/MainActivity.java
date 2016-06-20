@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayAdapter<String> aToDoAdapter;
     ListView lvItems;
     EditText etEditText;
+    private final int REQUEST_CODE = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                launchEditItemView();
+                launchEditItemView(todoItems.get(position), position);
             }
         });
     }
@@ -78,8 +79,21 @@ public class MainActivity extends AppCompatActivity {
         writeItems();
     }
 
-    private void launchEditItemView() {
+    private void launchEditItemView(String todoItem, int itemPosition) {
         Intent i = new Intent(MainActivity.this, EditItemActivity.class);
-        startActivity(i);
+        i.putExtra("todoItem", todoItem);
+        i.putExtra("todoItemPosition", itemPosition);
+        startActivityForResult(i, REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+            String editedItem = data.getExtras().getString("editedItem");
+            int editedItemPosition = data.getExtras().getInt("itemPosition");
+            todoItems.set(editedItemPosition, editedItem);
+            aToDoAdapter.notifyDataSetChanged();
+            writeItems();
+        }
     }
 }

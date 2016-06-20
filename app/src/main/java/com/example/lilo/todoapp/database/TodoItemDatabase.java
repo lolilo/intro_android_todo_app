@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class TodoItemDatabase extends SQLiteOpenHelper {
+    private static TodoItemDatabase sInstance;
+
     // Database Info
     private static final String DATABASE_NAME = "todoListDatabase";
     private static final int DATABASE_VERSION = 1;
@@ -16,7 +18,14 @@ public class TodoItemDatabase extends SQLiteOpenHelper {
     private static final String KEY_ID = "id";
     private static final String KEY_TITLE = "title";
 
-    public TodoItemDatabase(Context context) {
+    public static synchronized TodoItemDatabase getInstance(Context context) {
+        if (sInstance == null) {
+            sInstance = new TodoItemDatabase(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+
+    private TodoItemDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

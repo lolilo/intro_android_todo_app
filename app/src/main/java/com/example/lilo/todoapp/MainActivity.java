@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             todoItems = new ArrayList<String>(FileUtils.readLines(file));
         } catch (IOException e) {
-
+            todoItems = new ArrayList<String>();
         }
     }
 
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             FileUtils.writeLines(file, todoItems);
          } catch (IOException e) {
-
+            e.printStackTrace();
         }
     }
 

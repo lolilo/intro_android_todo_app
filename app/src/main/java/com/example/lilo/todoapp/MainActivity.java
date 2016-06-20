@@ -1,5 +1,6 @@
 package com.example.lilo.todoapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -37,6 +38,13 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                launchEditItemView();
+            }
+        });
     }
 
     public void populateArrayItems() {
@@ -68,5 +76,10 @@ public class MainActivity extends AppCompatActivity {
         aToDoAdapter.add(etEditText.getText().toString());
         etEditText.setText("");
         writeItems();
+    }
+
+    private void launchEditItemView() {
+        Intent i = new Intent(MainActivity.this, EditItemActivity.class);
+        startActivity(i);
     }
 }

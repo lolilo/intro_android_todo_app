@@ -43,7 +43,7 @@ public class TodoItemDatabase extends SQLiteOpenHelper {
     // If a database already exists on disk with the same DATABASE_NAME, this method will NOT be called.
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_TODO_TABLE = "CREATE TABLE" + TABLE_TODO_ITEMS +
+        String CREATE_TODO_TABLE = "CREATE TABLE " + TABLE_TODO_ITEMS +
                 "(" +
                 KEY_ID + " INTEGER PRIMARY KEY," +
                 KEY_TITLE + " TEXT" +
@@ -131,11 +131,12 @@ public class TodoItemDatabase extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(TODO_ITEMS_SELECT_QUERY, null);
         try {
             if (cursor.moveToFirst()) {
-                TodoItem newTodoItem = new TodoItem();
-                newTodoItem.title = cursor.getString(cursor.getColumnIndex(KEY_TITLE));
-                todoItems.add(newTodoItem);
+                do {
+                    TodoItem newTodoItem = new TodoItem();
+                    newTodoItem.title = cursor.getString(cursor.getColumnIndex(KEY_TITLE));
+                    todoItems.add(newTodoItem);
+                } while (cursor.moveToNext());
             }
-            while (cursor.moveToNext()) ;
         } catch (Exception e) {
             Log.d(TAG, "Error while trying to get todo items from database");
         } finally {
@@ -150,12 +151,17 @@ public class TodoItemDatabase extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         db.beginTransaction();
         try {
-            db.delete(TABLE_TODO_ITEMS, KEY_ID + " =?", new String[] {String.valueOf(todoItem.getId())});
+            db.delete(TABLE_TODO_ITEMS, KEY_TITLE + " =?", new String[] {String.valueOf(todoItem.title)});
             db.setTransactionSuccessful();
         } catch (Exception e) {
             Log.d(TAG, "Error while trying to delete todo item from database");
         } finally {
             db.endTransaction();
         }
+    }
+
+    public void deleteAllTodoItems() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(TABLE_TODO_ITEMS, null, null);
     }
 }

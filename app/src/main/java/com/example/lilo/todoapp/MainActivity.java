@@ -54,25 +54,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void populateArrayItems() {
-        readItems();
-        aToDoAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, todoItems);
-    }
-
-    private void readItems() {
-        DbTodoItems = databaseHelper.getAllTodoItems();
-        todoItems = new ArrayList<String>();
-        for (TodoItem todoItem : DbTodoItems) {
-            todoItems.add(todoItem.title);
-        }
-    }
-
     public void onAddItem(View view) {
         aToDoAdapter.add(etEditText.getText().toString());
         TodoItem todoItem = new TodoItem();
         todoItem.title = etEditText.getText().toString();
         etEditText.setText("");
         databaseHelper.addTodoItem(todoItem);
+        DbTodoItems = databaseHelper.getAllTodoItems(); //TODO: speed this up?
     }
 
     public void onDeleteAll(View view) {
@@ -88,6 +76,32 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(i, REQUEST_CODE);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+            String editedItem = data.getExtras().getString("editedItem");
+            int editedItemPosition = data.getExtras().getInt("itemPosition");
+            todoItems.set(editedItemPosition, editedItem);
+            aToDoAdapter.notifyDataSetChanged();
+            updateDb(data, editedItem);
+        }
+    }
+
+
+    // TODO: create MainActivityHelper with Dagger
+    private void populateArrayItems() {
+        readItems();
+        aToDoAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, todoItems);
+    }
+
+    private void readItems() {
+        DbTodoItems = databaseHelper.getAllTodoItems();
+        todoItems = new ArrayList<String>();
+        for (TodoItem todoItem : DbTodoItems) {
+            todoItems.add(todoItem.title);
+        }
+    }
+
     private TodoItem getDbTodoItemByTitle(String title) {
         for (TodoItem todoItem : DbTodoItems) {
             if (todoItem.title.equals(title)) {
@@ -97,20 +111,10 @@ public class MainActivity extends AppCompatActivity {
         throw new NoSuchElementException("Error while looking for existing todo item.");
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
-            String originalItem = data.getExtras().getString("originalItem");
-            String editedItem = data.getExtras().getString("editedItem");
-            int editedItemPosition = data.getExtras().getInt("itemPosition");
-            todoItems.set(editedItemPosition, editedItem);
-            aToDoAdapter.notifyDataSetChanged();
-
-
-
-            TodoItem editedTodoItemFromDb = getDbTodoItemByTitle(originalItem);
-            editedTodoItemFromDb.title = editedItem;
-            databaseHelper.updateTodoItem(editedTodoItemFromDb);
-        }
+    private void updateDb(Intent data, String editedItem) {
+        String originalItem = data.getExtras().getString("originalItem");
+        TodoItem editedTodoItemFromDb = getDbTodoItemByTitle(originalItem);
+        editedTodoItemFromDb.title = editedItem;
+        databaseHelper.updateTodoItem(editedTodoItemFromDb);
     }
 }

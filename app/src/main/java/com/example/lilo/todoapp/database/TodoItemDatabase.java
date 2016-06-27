@@ -96,7 +96,7 @@ public class TodoItemDatabase extends SQLiteOpenHelper {
 
             if (rows == 1) {
                 String todoItemSelectQuery = String.format("SELECT %s FROM %s WHERE %s = ?",
-                        KEY_ID, TABLE_TODO_ITEMS, KEY_TITLE);
+                        KEY_ID, TABLE_TODO_ITEMS, KEY_ID);
                 Cursor cursor = db.rawQuery(todoItemSelectQuery,
                         new String[]{String.valueOf(todoItem.getId())});
                 try {
@@ -133,6 +133,7 @@ public class TodoItemDatabase extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) {
                 do {
                     TodoItem newTodoItem = new TodoItem();
+                    newTodoItem.id = cursor.getInt(cursor.getColumnIndex(KEY_ID));
                     newTodoItem.title = cursor.getString(cursor.getColumnIndex(KEY_TITLE));
                     todoItems.add(newTodoItem);
                 } while (cursor.moveToNext());

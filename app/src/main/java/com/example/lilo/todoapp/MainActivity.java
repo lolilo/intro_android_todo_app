@@ -14,9 +14,11 @@ import com.example.lilo.todoapp.models.TodoItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class MainActivity extends AppCompatActivity {
     ArrayList<String> todoItems;
+    List<TodoItem> DbTodoItems;
     ArrayAdapter<String> aToDoAdapter;
     ListView lvItems;
     EditText etEditText;
@@ -58,18 +60,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void readItems() {
-        List<TodoItem> todoItemsFromDb = databaseHelper.getAllTodoItems();
+        DbTodoItems = databaseHelper.getAllTodoItems();
         todoItems = new ArrayList<String>();
-        for (TodoItem todoItem : todoItemsFromDb) {
+        for (TodoItem todoItem : DbTodoItems) {
             todoItems.add(todoItem.title);
-        }
-    }
-
-    private void writeItems() {
-        for (String todoItemTitle : todoItems) {
-            TodoItem todoItem = new TodoItem();
-            todoItem.title = todoItemTitle;
-            databaseHelper.updateTodoItem(todoItem);
         }
     }
 
@@ -81,6 +75,12 @@ public class MainActivity extends AppCompatActivity {
         databaseHelper.addTodoItem(todoItem);
     }
 
+    public void onDeleteAll(View view) {
+        databaseHelper.deleteAllTodoItems();
+        todoItems.clear();
+        aToDoAdapter.notifyDataSetChanged();
+    }
+
     private void launchEditItemView(String todoItem, int itemPosition) {
         Intent i = new Intent(MainActivity.this, EditItemActivity.class);
         i.putExtra("todoItem", todoItem);
@@ -88,14 +88,29 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(i, REQUEST_CODE);
     }
 
+    private TodoItem getDbTodoItemByTitle(String title) {
+        for (TodoItem todoItem : DbTodoItems) {
+            if (todoItem.title.equals(title)) {
+                return todoItem;
+            }
+        }
+        throw new NoSuchElementException("Error while looking for existing todo item.");
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+            String originalItem = data.getExtras().getString("originalItem");
             String editedItem = data.getExtras().getString("editedItem");
             int editedItemPosition = data.getExtras().getInt("itemPosition");
             todoItems.set(editedItemPosition, editedItem);
             aToDoAdapter.notifyDataSetChanged();
-            writeItems();
+
+
+
+            TodoItem editedTodoItemFromDb = getDbTodoItemByTitle(originalItem);
+            editedTodoItemFromDb.title = editedItem;
+            databaseHelper.updateTodoItem(editedTodoItemFromDb);
         }
     }
 }

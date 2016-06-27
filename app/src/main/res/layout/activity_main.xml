@@ -37,4 +37,14 @@
         android:layout_alignParentStart="true"
         android:hint="@string/add_item" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/deleteAll"
+        android:id="@+id/btnDeleteAll"
+        android:onClick="onDeleteAll"
+        android:layout_alignBottom="@+id/lvItems"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
 </RelativeLayout>

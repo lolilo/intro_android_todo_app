@@ -10,7 +10,6 @@ import android.util.Log;
 import com.example.lilo.todoapp.models.TodoItem;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class TodoItemDatabase extends SQLiteOpenHelper {
     private static TodoItemDatabase sInstance;
@@ -63,21 +62,23 @@ public class TodoItemDatabase extends SQLiteOpenHelper {
         }
     }
 
-    public void addTodoItem(TodoItem todoItem) {
+    public long addTodoItem(TodoItem todoItem) {
         SQLiteDatabase db = getWritableDatabase();
+        long newToDoItemId = -1;
 
         db.beginTransaction();
         try {
             ContentValues values = new ContentValues();
             values.put(KEY_TITLE, todoItem.title);
 
-            db.insertOrThrow(TABLE_TODO_ITEMS, null, values);
+            newToDoItemId = db.insertOrThrow(TABLE_TODO_ITEMS, null, values);
             db.setTransactionSuccessful();
         } catch (Exception e) {
             Log.d(TAG, "Error while adding todo item to database");
         } finally {
             db.endTransaction();
         }
+        return newToDoItemId;
     }
 
     public long updateTodoItem(TodoItem todoItem) {
@@ -122,8 +123,8 @@ public class TodoItemDatabase extends SQLiteOpenHelper {
         return todoItemId;
     }
 
-    public List<TodoItem> getAllTodoItems() {
-        List<TodoItem> todoItems = new ArrayList<>();
+    public ArrayList<TodoItem> getAllTodoItems() {
+        ArrayList<TodoItem> todoItems = new ArrayList<>();
 
         String TODO_ITEMS_SELECT_QUERY = String.format("SELECT  * FROM " + TABLE_TODO_ITEMS);
 

@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     EditText etEditText;
     private final int REQUEST_CODE = 20;
     TodoItemDatabase databaseHelper;
+    EditText etEditDueDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         lvItems = (ListView) findViewById(R.id.lvItems);
         lvItems.setAdapter(aToDoAdapter);
         etEditText = (EditText) findViewById(R.id.etEditText);
+        etEditDueDate = (EditText) findViewById(R.id.etEditDueDate);
         lvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -54,7 +56,9 @@ public class MainActivity extends AppCompatActivity {
     public void onAddItem(View view) {
         TodoItem todoItem = new TodoItem();
         todoItem.title = etEditText.getText().toString();
+        todoItem.dueDate = etEditDueDate.getText().toString();
         etEditText.setText("");
+        etEditDueDate.setText("");
         todoItem.id = (int) (databaseHelper.addTodoItem(todoItem));
         todoItems.add(todoItem);
     }

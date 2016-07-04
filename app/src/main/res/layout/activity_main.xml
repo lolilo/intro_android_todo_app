@@ -32,10 +32,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/etEditText"
-        android:layout_alignBottom="@+id/btnAddItem"
+        android:hint="@string/addItem"
+        android:layout_below="@+id/lvItems"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:hint="@string/add_item" />
+        android:layout_alignParentStart="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -46,5 +46,14 @@
         android:layout_alignBottom="@+id/lvItems"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/etEditDueDate"
+        android:hint="@string/editDueDate"
+        android:layout_below="@+id/lvItems"
+        android:layout_toLeftOf="@+id/btnDeleteAll"
+        android:layout_toStartOf="@+id/btnDeleteAll" />
 
 </RelativeLayout>

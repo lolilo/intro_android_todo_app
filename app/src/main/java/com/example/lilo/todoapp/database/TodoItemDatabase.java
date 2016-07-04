@@ -26,6 +26,7 @@ public class TodoItemDatabase extends SQLiteOpenHelper {
     // Todo Table Columns
     private static final String KEY_ID = "id";
     private static final String KEY_TITLE = "title";
+    private static final String KEY_DUE_DATE = "due_date";
 
     public static synchronized TodoItemDatabase getInstance(Context context) {
         if (sInstance == null) {
@@ -45,7 +46,8 @@ public class TodoItemDatabase extends SQLiteOpenHelper {
         String CREATE_TODO_TABLE = "CREATE TABLE " + TABLE_TODO_ITEMS +
                 "(" +
                 KEY_ID + " INTEGER PRIMARY KEY," +
-                KEY_TITLE + " TEXT" +
+                KEY_TITLE + " TEXT," +
+                KEY_DUE_DATE + " TEXT NOT NULL DEFAULT '-'" +
                 ")";
         db.execSQL(CREATE_TODO_TABLE);
     }
@@ -70,6 +72,7 @@ public class TodoItemDatabase extends SQLiteOpenHelper {
         try {
             ContentValues values = new ContentValues();
             values.put(KEY_TITLE, todoItem.title);
+            values.put(KEY_DUE_DATE, todoItem.dueDate);
 
             newToDoItemId = db.insertOrThrow(TABLE_TODO_ITEMS, null, values);
             db.setTransactionSuccessful();
@@ -89,6 +92,7 @@ public class TodoItemDatabase extends SQLiteOpenHelper {
         try {
             ContentValues values = new ContentValues();
             values.put(KEY_TITLE, todoItem.title);
+            values.put(KEY_DUE_DATE, todoItem.dueDate);
 
             int rows = db.update(
                     TABLE_TODO_ITEMS, values, KEY_ID + " = ?",
@@ -136,6 +140,7 @@ public class TodoItemDatabase extends SQLiteOpenHelper {
                     TodoItem newTodoItem = new TodoItem();
                     newTodoItem.id = cursor.getInt(cursor.getColumnIndex(KEY_ID));
                     newTodoItem.title = cursor.getString(cursor.getColumnIndex(KEY_TITLE));
+                    newTodoItem.dueDate = cursor.getString(cursor.getColumnIndex(KEY_DUE_DATE));
                     todoItems.add(newTodoItem);
                 } while (cursor.moveToNext());
             }
